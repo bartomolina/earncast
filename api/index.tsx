@@ -90,16 +90,16 @@ export const app = new Frog({
   // hub: neynar({ apiKey: 'NEYNAR_FROG_FM' })
 });
 
-app.transaction("/approve", (c) => {
-  // Contract transaction response.
-  return c.contract({
-    abi,
-    chainId: "eip155:84532",
-    functionName: "approve",
-    args: ["0x4E8e24318B8B51e84d36deC43Ca4517FF8a2557A", 400],
-    to: "0xcF00ab65D16E4E393393249733EDA12AA776b524",
-  });
-});
+// app.transaction("/approve", (c) => {
+//   console.log("testing");
+//   return c.contract({
+//     abi,
+//     chainId: "eip155:84532",
+//     functionName: "approve",
+//     args: ["0x49Be80f6353d2CC89baF46A4127281F39fd7a248", 400],
+//     to: "0xcF00ab65D16E4E393393249733EDA12AA776b524",
+//   });
+// });
 
 app.frame("/campaign", (c) => {
   const { buttonValue, inputText, status, deriveState } = c;
@@ -120,7 +120,9 @@ app.frame("/campaign", (c) => {
         ),
         intents: [
           <TextInput placeholder="$DEGEN amount" />,
-          <Button.Transaction target="/approve">Approve</Button.Transaction>,
+          <Button.Transaction target="/send-ether" value="banana">
+            Banana
+          </Button.Transaction>,
         ],
       });
     case 1:
@@ -149,6 +151,15 @@ app.frame("/campaign", (c) => {
         ],
       });
   }
+});
+
+app.transaction("/send-ether", (c) => {
+  const { buttonValue } = c;
+  return c.send({
+    chainId: "eip155:84532",
+    to: "0xd2135CfB216b74109775236E36d4b433F1DF507B",
+    value: 1n,
+  });
 });
 
 app.frame("/ads", (c) => {
