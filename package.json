@@ -10,7 +10,8 @@
   "dependencies": {
     "@airstack/frog": "^0.0.7",
     "frog": "latest",
-    "hono": "^4"
+    "hono": "^4",
+    "react": "^18.2.0"
   },
   "devDependencies": {
     "tsx": "^4.7.1",
