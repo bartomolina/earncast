@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@airstack/frog": "^0.0.7",
+    "ethers": "^6.11.1",
     "frog": "latest",
     "hono": "^4",
     "react": "^18.2.0"

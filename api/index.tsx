@@ -8,6 +8,7 @@ import {
   validateCaptchaChallenge,
 } from "@airstack/frog";
 import { abi } from "./abi.js";
+import { parseUnits } from "ethers";
 
 // Uncomment to use Edge Runtime.
 // export const config = {
@@ -95,7 +96,7 @@ app.transaction("/approve", (c) => {
     abi,
     chainId: "eip155:84532",
     functionName: "approve",
-    args: ["0x49Be80f6353d2CC89baF46A4127281F39fd7a248", "500"],
+    args: ["0x49Be80f6353d2CC89baF46A4127281F39fd7a248", parseUnits("2", 18)],
     to: "0xcF00ab65D16E4E393393249733EDA12AA776b524",
   });
 });
