@@ -168,17 +168,21 @@ app.frame("/ads2", (c) => {
   const { buttonValue, inputText, status, deriveState, frameData } = c;
   const state = deriveState((previousState) => {
     if (buttonValue === "dashboard") {
-      if (frameData) {
-        fdk.sendAnalytics("campaign1", frameData, "1");
-      }
+      fdk.sendAnalytics(
+        "campaign1",
+        { trustedData: "", untrustedData: frameData },
+        "1"
+      );
       previousState.pageIndex = 1;
     }
     if (buttonValue === "validated") previousState.pageIndex = 2;
     if (buttonValue === "next") {
       previousState.pageIndex = 3;
-      if (frameData) {
-        fdk.sendAnalytics("campaign2", frameData, "2");
-      }
+      fdk.sendAnalytics(
+        "campaign2",
+        { trustedData: "", untrustedData: frameData },
+        "1"
+      );
     }
   });
   console.log("state: ", state);
