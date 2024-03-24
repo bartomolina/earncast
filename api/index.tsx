@@ -7,20 +7,20 @@ import {
   generateCaptchaChallenge,
   validateCaptchaChallenge,
 } from "@airstack/frog";
+import { abi } from "./abi.js";
 
 // Uncomment to use Edge Runtime.
 // export const config = {
 //   runtime: 'edge',
 // }
 
-const campaignFrameJSX = (
+const campaignImage = (
   title: string,
   subtitle: string,
   description: string
 ) => (
   <div
     style={{
-      alignItems: "center",
       background: "linear-gradient(to right, #432889, #17101F)",
       backgroundSize: "100% 100%",
       display: "flex",
@@ -84,27 +84,117 @@ export const app = new Frog({
   initialState: {
     captchaId: "",
     valueHash: "",
+    pageIndex: 0,
   },
   // Supply a Hub to enable frame verification.
   // hub: neynar({ apiKey: 'NEYNAR_FROG_FM' })
 });
 
-app.frame("/", (c) => {
-  const { buttonValue, inputText, status } = c;
-  return c.res({
-    image: campaignFrameJSX(
-      "Create new Campaign",
-      "Amount in $DEGEN",
-      "enter the total amount you want to distribute"
-    ),
-    intents: [
-      <TextInput placeholder="$DEGEN amount" />,
-      <Button value="next" action="/generate-captcha">
-        Next
-      </Button>,
-      status === "response" && <Button.Reset>Reset</Button.Reset>,
-    ],
+app.transaction("/approve", (c) => {
+  // Contract transaction response.
+  return c.contract({
+    abi,
+    chainId: "eip155:84532",
+    functionName: "approve",
+    args: ["0x4E8e24318B8B51e84d36deC43Ca4517FF8a2557A", 400],
+    to: "0xcF00ab65D16E4E393393249733EDA12AA776b524",
   });
+});
+
+app.frame("/campaign", (c) => {
+  const { buttonValue, inputText, status, deriveState } = c;
+  const state = deriveState((previousState) => {
+    if (buttonValue === "approve") previousState.pageIndex = 1;
+    if (buttonValue === "submit") previousState.pageIndex = 2;
+  });
+  console.log("state: ", state);
+  console.log("status: ", status);
+
+  switch (state.pageIndex) {
+    case 0:
+      return c.res({
+        image: campaignImage(
+          "🚀 Create new Campaign",
+          "Amount in $DEGEN",
+          "enter the total amount you want to distribute"
+        ),
+        intents: [
+          <TextInput placeholder="$DEGEN amount" />,
+          <Button.Transaction target="/approve">Approve</Button.Transaction>,
+        ],
+      });
+    case 1:
+      return c.res({
+        image: campaignImage(
+          "🚀 Create new Campaign",
+          "Message",
+          "enter the text you want to be displayed on the campaign"
+        ),
+        intents: [
+          <TextInput placeholder="Message" />,
+          <Button value="submit">Submit</Button>,
+        ],
+      });
+    case 2:
+      return c.res({
+        image: campaignImage(
+          "🎉 New campaign successfully created",
+          "",
+          "Everyone who follows this account and @earncast will get a $DEGEN stream just by watching the ad."
+        ),
+        intents: [
+          <Button.Redirect location="https://pinata.cloud">
+            Track analytics
+          </Button.Redirect>,
+        ],
+      });
+  }
+});
+
+app.frame("/ads", (c) => {
+  const { buttonValue, inputText, status, deriveState } = c;
+  const state = deriveState((previousState) => {
+    if (buttonValue === "dashboard") previousState.pageIndex = 1;
+    if (buttonValue === "validated") previousState.pageIndex = 2;
+  });
+  console.log("state: ", state);
+  console.log("status: ", status);
+
+  switch (state.pageIndex) {
+    case 0:
+      return c.res({
+        image: campaignImage(
+          "🤑 Get paid watching ads",
+          "",
+          "start watching ads, claim your rewards"
+        ),
+        intents: [
+          <Button value="dashboard">Dashboard</Button>,
+          <Button action="/generate-captcha">View Ads</Button>,
+        ],
+      });
+    case 1:
+      return c.res({
+        image: campaignImage("Dashboard", "", ""),
+        intents: [
+          <Button.Redirect location="https://superfluid.finance">
+            Superfluid
+          </Button.Redirect>,
+        ],
+      });
+    case 2:
+      return c.res({
+        image: campaignImage(
+          "Come to the 6th Edition of the CryptoPlaza Forum",
+          "",
+          "Must follow @cryptoplaza @earncast. Must recast this frame"
+        ),
+        intents: [
+          <Button value="submit">Claim rewards</Button>,
+          <Button value="submit">⏭️</Button>,
+        ],
+      });
+  }
 });
 
 app.frame("/generate-captcha", async (c) => {
@@ -141,7 +231,10 @@ app.frame("/verify-captcha", async (c) => {
   return c.res({
     image,
     intents: [
-      <Button action={isValidated ? "/test" : "/generate-captcha"}>
+      <Button
+        value="validated"
+        action={isValidated ? "/ads" : "/generate-captcha"}
+      >
         {isValidated ? "Continue" : "Try Again?"}
       </Button>,
     ],
