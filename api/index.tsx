@@ -98,7 +98,7 @@ app.transaction("/approve", (c) => {
   return c.contract({
     abi,
     chainId: "eip155:84532",
-    functionName: "transfer",
+    functionName: "approve",
     args: ["0xb65D9CA12eC91694FE0C4E7390d26e2b42cc3180", parseEther(inputText)],
     to: "0xf38e414F34cF01999fB56d02584B44aa348aE9dc",
   });

@@ -3,7 +3,7 @@ export const abi = [
     inputs: [
       {
         internalType: "address",
-        name: "to",
+        name: "spender",
         type: "address",
       },
       {
@@ -12,7 +12,7 @@ export const abi = [
         type: "uint256",
       },
     ],
-    name: "transfer",
+    name: "approve",
     outputs: [
       {
         internalType: "bool",
