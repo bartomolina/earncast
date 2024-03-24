@@ -96,8 +96,8 @@ export const app = new Frog({
 });
 
 app.use(
-  "/",
-  fdk.analyticsMiddleware({ frameId: "frame_id", customId: "custom_id" })
+  "/ads2",
+  fdk.analyticsMiddleware({ frameId: "earncast_ads", customId: "root" })
 );
 
 app.transaction("/approve", (c) => {
@@ -169,7 +169,7 @@ app.frame("/ads2", (c) => {
   const state = deriveState((previousState) => {
     if (buttonValue === "dashboard") {
       if (frameData) {
-        fdk.sendAnalytics("campaign2", frameData, "2");
+        fdk.sendAnalytics("campaign1", frameData, "1");
       }
       previousState.pageIndex = 1;
     }
