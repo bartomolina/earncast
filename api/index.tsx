@@ -90,7 +90,30 @@ export const app = new Frog({
   // hub: neynar({ apiKey: 'NEYNAR_FROG_FM' })
 });
 
-app.frame("/campaign", (c) => {
+app.transaction("/approve", (c) => {
+  return c.contract({
+    abi,
+    chainId: "eip155:84532",
+    functionName: "approve",
+    args: [
+      "0x49Be80f6353d2CC89baF46A4127281F39fd7a248",
+      parseEther("400", "wei"),
+    ],
+    to: "0xcF00ab65D16E4E393393249733EDA12AA776b524",
+  });
+});
+
+app.transaction("/send-ether", (c) => {
+  const { inputText } = c;
+  // Send transaction response.
+  return c.send({
+    chainId: "eip155:84532",
+    to: "0xd2135CfB216b74109775236E36d4b433F1DF507B",
+    value: parseEther("0.000000000000000012"),
+  });
+});
+
+app.frame("/", (c) => {
   const { buttonValue, inputText, status, deriveState } = c;
   const state = deriveState((previousState) => {
     if (buttonValue === "approve") previousState.pageIndex = 1;
@@ -145,53 +168,93 @@ app.frame("/campaign", (c) => {
   }
 });
 
-app.frame("/", (c) => {
+app.frame("/ads", (c) => {
+  const { buttonValue, inputText, status, deriveState } = c;
+  const state = deriveState((previousState) => {
+    if (buttonValue === "dashboard") previousState.pageIndex = 1;
+    if (buttonValue === "validated") previousState.pageIndex = 2;
+  });
+  console.log("state: ", state);
+  console.log("status: ", status);
+
+  switch (state.pageIndex) {
+    case 0:
+      return c.res({
+        image: campaignImage(
+          "🤑 Get paid watching ads",
+          "",
+          "start watching ads, claim your rewards"
+        ),
+        intents: [
+          <Button value="dashboard">Dashboard</Button>,
+          <Button action="/generate-captcha">View Ads</Button>,
+        ],
+      });
+    case 1:
+      return c.res({
+        image: campaignImage("Dashboard", "", ""),
+        intents: [
+          <Button.Redirect location="https://superfluid.finance">
+            Superfluid
+          </Button.Redirect>,
+        ],
+      });
+    case 2:
+      return c.res({
+        image: campaignImage(
+          "Come to the 6th Edition of the CryptoPlaza Forum",
+          "",
+          "Must follow @cryptoplaza @earncast. Must recast this frame"
+        ),
+        intents: [
+          <Button value="submit">Claim rewards</Button>,
+          <Button value="submit">⏭️</Button>,
+        ],
+      });
+  }
+});
+
+app.frame("/generate-captcha", async (c) => {
+  const { deriveState } = c ?? {};
+  const { data, state, image } = await generateCaptchaChallenge();
+  // The 2 numbers generated can be used to generate custom Frame image
+  const { numA, numB } = data ?? {};
+  deriveState((previousState) => {
+    // Store `state` data into Frames state
+    previousState.captchaId = state.captchaId;
+    previousState.valueHash = state.valueHash;
+  });
   return c.res({
-    action: "/finish",
-    image: (
-      <div style={{ color: "white", display: "flex", fontSize: 60 }}>
-        Perform a transaction
-      </div>
-    ),
+    image, // Use template Frame image
     intents: [
-      <TextInput placeholder="Value (ETH)" />,
-      <Button.Transaction target="/send-ether">Send Ether</Button.Transaction>,
-      <Button.Transaction target="/mint">Mint</Button.Transaction>,
+      <TextInput placeholder="Type Here!" />,
+      <Button action="/verify-captcha">Verify</Button>,
     ],
   });
 });
 
-app.frame("/finish", (c) => {
-  const { transactionId } = c;
+app.frame("/verify-captcha", async (c) => {
+  const { inputText, deriveState } = c ?? {};
+  const state = deriveState() ?? {};
+  const { isValidated, image } = await validateCaptchaChallenge({
+    inputText,
+    state,
+  });
+  deriveState((previousState) => {
+    // Clear Frames state
+    previousState.captchaId = "";
+    previousState.valueHash = "";
+  });
   return c.res({
-    image: (
-      <div style={{ color: "white", display: "flex", fontSize: 60 }}>
-        Transaction ID: {transactionId}
-      </div>
-    ),
-  });
-});
-
-app.transaction("/campaign/send-ether", (c) => {
-  const { inputText } = c;
-  // Send transaction response.
-  return c.send({
-    chainId: "eip155:84532",
-    to: "0xd2135CfB216b74109775236E36d4b433F1DF507B",
-    value: parseEther(".000000000000000012"),
-  });
-});
-
-app.transaction("/mint", (c) => {
-  const { inputText } = c;
-  // Contract transaction response.
-  return c.contract({
-    abi,
-    chainId: "eip155:10",
-    functionName: "mint",
-    args: [69420n],
-    to: "0xd2135CfB216b74109775236E36d4b433F1DF507B",
-    value: parseEther(inputText),
+    image,
+    intents: [
+      <Button
+        value="validated"
+        action={isValidated ? "/ads" : "/generate-captcha"}
+      >
+        {isValidated ? "Continue" : "Try Again?"}
+      </Button>,
+    ],
   });
 });
 
