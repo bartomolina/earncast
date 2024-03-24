@@ -18,8 +18,7 @@ import { constants } from "ethers";
 const campaignImage = (
   title: string,
   subtitle: string,
-  description: string,
-  tx: string
+  description: string
 ) => (
   <div
     style={{
@@ -84,9 +83,10 @@ export const app = new Frog({
   assetsPath: "/",
   basePath: "/api",
   initialState: {
+    tx: "",
+    pageIndex: 0,
     captchaId: "",
     valueHash: "",
-    pageIndex: 0,
   },
   // Supply a Hub to enable frame verification.
   // hub: neynar({ apiKey: 'NEYNAR_FROG_FM' })
@@ -100,7 +100,7 @@ app.transaction("/approve", (c) => {
     chainId: "eip155:84532",
     functionName: "approve",
     args: ["0xb65D9CA12eC91694FE0C4E7390d26e2b42cc3180", parseEther(inputText)],
-    to: "0xf38e414F34cF01999fB56d02584B44aa348aE9dc",
+    to: "0x46EA78EFC79aed85B0DE4d4dcecB53633d5E3445",
   });
 });
 
