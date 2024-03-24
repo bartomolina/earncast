@@ -23,4 +23,17 @@ export const abi = [
     stateMutability: "nonpayable",
     type: "function",
   },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_test",
+        type: "uint256",
+      },
+    ],
+    name: "setTest",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
 ];
