@@ -7,9 +7,9 @@ export const abi = [
         type: "address",
       },
       {
-        internalType: "uint256",
+        internalType: "string",
         name: "value",
-        type: "uint256",
+        type: "string",
       },
     ],
     name: "approve",
