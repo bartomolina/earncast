@@ -174,7 +174,7 @@ app.frame("/ads2", (c) => {
         ),
         intents: [
           <Button value="dashboard">Dashboard</Button>,
-          <Button action="/generate-captcha">View Ads</Button>,
+          <Button action="/generate-captcha2">View Ads</Button>,
         ],
       });
     case 1:
@@ -214,41 +214,7 @@ app.frame("/ads2", (c) => {
   }
 });
 
-app.frame("/ads", (c) => {
-  const { buttonValue, inputText, status, deriveState } = c;
-  const state = deriveState((previousState) => {
-    if (buttonValue === "dashboard") previousState.pageIndex = 1;
-  });
-  console.log("state: ", state);
-  console.log("status: ", status);
-
-  switch (state.pageIndex) {
-    case 0:
-      return c.res({
-        image: campaignImage(
-          "🤑 Get paid watching ads",
-          "...",
-          "start watching ads, claim your rewards"
-        ),
-        intents: [
-          <Button value="dashboard">Dashboard</Button>,
-          <Button action="/generate-captcha">View Ads</Button>,
-        ],
-      });
-    case 1:
-      return c.res({
-        image: campaignImage("Dashboard", "", ""),
-        intents: [
-          <Button.Reset>Back</Button.Reset>,
-          <Button.Redirect location="https://superfluid.finance">
-            Superfluid
-          </Button.Redirect>,
-        ],
-      });
-  }
-});
-
-app.frame("/generate-captcha", async (c) => {
+app.frame("/generate-captcha2", async (c) => {
   const { deriveState } = c ?? {};
   const { data, state, image } = await generateCaptchaChallenge();
   // The 2 numbers generated can be used to generate custom Frame image
@@ -284,7 +250,7 @@ app.frame("/verify-captcha", async (c) => {
     intents: [
       <Button
         value="validated"
-        action={isValidated ? "/ads" : "/generate-captcha"}
+        action={isValidated ? "/ads" : "/generate-captcha2"}
       >
         {isValidated ? "Continue" : "Try Again?"}
       </Button>,
