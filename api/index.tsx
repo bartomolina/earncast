@@ -95,12 +95,13 @@ export const app = new Frog({
 app.transaction("/approve", (c) => {
   const { inputText } = c;
 
-  return c.contract({
-    abi,
+  return c.res({
     chainId: "eip155:84532",
-    functionName: "approve",
-    args: ["0x46EA78EFC79aed85B0DE4d4dcecB53633d5E3445", parseEther(inputText)],
-    to: "0xA4403409286719c072Ac3D6A1Add23AC9e53c7a1",
+    method: "eth_sendTransaction",
+    params: {
+      to: "0xA4403409286719c072Ac3D6A1Add23AC9e53c7a1",
+      data: "0x095ea7b300000000000000000000000046ea78efc79aed85b0de4d4dcecb53633d5e34450000000000000000000000000000000000000000000000000de0b6b3a7640000",
+    },
   });
 });
 
