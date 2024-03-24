@@ -228,12 +228,12 @@ app.frame("/generate-captcha2", async (c) => {
     image, // Use template Frame image
     intents: [
       <TextInput placeholder="Type Here!" />,
-      <Button action="/verify-captcha">Verify</Button>,
+      <Button action="/verify-captcha2">Verify</Button>,
     ],
   });
 });
 
-app.frame("/verify-captcha", async (c) => {
+app.frame("/verify-captcha2", async (c) => {
   const { inputText, deriveState } = c ?? {};
   const state = deriveState() ?? {};
   const { isValidated, image } = await validateCaptchaChallenge({
