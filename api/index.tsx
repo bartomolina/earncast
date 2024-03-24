@@ -9,6 +9,74 @@ import {
 } from "@airstack/frog";
 import { abi } from "./abi.js";
 
+// Uncomment to use Edge Runtime.
+// export const config = {
+//   runtime: 'edge',
+// }
+
+const campaignImage = (
+  title: string,
+  subtitle: string,
+  description: string
+) => (
+  <div
+    style={{
+      background: "linear-gradient(to right, #432889, #17101F)",
+      backgroundSize: "100% 100%",
+      display: "flex",
+      flexDirection: "column",
+      flexWrap: "nowrap",
+      height: "100%",
+      justifyContent: "center",
+      textAlign: "center",
+      width: "100%",
+    }}
+  >
+    <div
+      style={{
+        color: "white",
+        fontSize: 60,
+        fontStyle: "normal",
+        letterSpacing: "-0.025em",
+        lineHeight: 1.4,
+        marginTop: 30,
+        padding: "0 120px",
+        whiteSpace: "pre-wrap",
+      }}
+    >
+      {title}
+    </div>
+    <div
+      style={{
+        color: "white",
+        fontSize: 50,
+        fontStyle: "normal",
+        letterSpacing: "-0.025em",
+        lineHeight: 1.4,
+        marginTop: 30,
+        padding: "0 120px",
+        whiteSpace: "pre-wrap",
+      }}
+    >
+      {subtitle}
+    </div>
+    <div
+      style={{
+        color: "white",
+        fontSize: 40,
+        fontStyle: "normal",
+        letterSpacing: "-0.025em",
+        lineHeight: 1.4,
+        marginTop: 30,
+        padding: "0 120px",
+        whiteSpace: "pre-wrap",
+      }}
+    >
+      {description}
+    </div>
+  </div>
+);
+
 export const app = new Frog({
   apiKey: process.env.AIRSTACK_API_KEY as string,
   assetsPath: "/",
@@ -20,6 +88,61 @@ export const app = new Frog({
   },
   // Supply a Hub to enable frame verification.
   // hub: neynar({ apiKey: 'NEYNAR_FROG_FM' })
+});
+
+app.frame("/campaign", (c) => {
+  const { buttonValue, inputText, status, deriveState } = c;
+  const state = deriveState((previousState) => {
+    if (buttonValue === "approve") previousState.pageIndex = 1;
+    if (buttonValue === "submit") previousState.pageIndex = 2;
+  });
+  console.log("state: ", state);
+  console.log("status: ", status);
+
+  switch (state.pageIndex) {
+    case 0:
+      return c.res({
+        image: campaignImage(
+          "🚀 Create new Campaign",
+          "Amount in $DEGEN",
+          "enter the total amount you want to distribute"
+        ),
+        intents: [
+          <TextInput placeholder="$DEGEN amount" />,
+          <Button.Transaction target="/approve" action="/campaign">
+            Approve
+          </Button.Transaction>,
+          <Button.Transaction target="/send-ether" action="/campaign">
+            Send tx
+          </Button.Transaction>,
+        ],
+      });
+    case 1:
+      return c.res({
+        image: campaignImage(
+          "🚀 Create new Campaign",
+          "Message",
+          "enter the text you want to be displayed on the campaign"
+        ),
+        intents: [
+          <TextInput placeholder="Message" />,
+          <Button value="submit">Submit</Button>,
+        ],
+      });
+    case 2:
+      return c.res({
+        image: campaignImage(
+          "🎉 New campaign successfully created",
+          "",
+          "Everyone who follows this account and @earncast will get a $DEGEN stream just by watching the ad."
+        ),
+        intents: [
+          <Button.Redirect location="https://pinata.cloud">
+            Track analytics
+          </Button.Redirect>,
+        ],
+      });
+  }
 });
 
 app.frame("/", (c) => {
