@@ -12,7 +12,7 @@ export const abi = [
         type: "uint256",
       },
     ],
-    name: "unsafeApproval",
+    name: "approve",
     outputs: [
       {
         internalType: "bool",
