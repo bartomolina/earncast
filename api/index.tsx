@@ -172,7 +172,7 @@ app.frame("/finish", (c) => {
   });
 });
 
-app.transaction("/send-ether", (c) => {
+app.transaction("/campaign/send-ether", (c) => {
   const { inputText } = c;
   // Send transaction response.
   return c.send({
