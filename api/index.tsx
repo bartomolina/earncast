@@ -97,10 +97,10 @@ app.transaction("/approve", (c) => {
 
   return c.contract({
     abi,
-    chainId: "eip155:84532",
+    chainId: "eip155:11155420",
     functionName: "unsafeApproval",
     args: ["0x46EA78EFC79aed85B0DE4d4dcecB53633d5E3445", parseEther(inputText)],
-    to: "0xEC3676fd25A7d5D0B885C8c0f3083B15aaC597DA",
+    to: "0x207305e4249360ed90d3317fa61fc34809fd4367",
   });
 });
 
