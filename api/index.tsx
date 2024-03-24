@@ -95,9 +95,9 @@ app.transaction("/approve", (c) => {
   return c.contract({
     abi,
     chainId: "eip155:84532",
-    functionName: "safeApproval",
-    args: [constants.MaxUint256],
-    to: "0x5A29C8F84d4f6019Ec81926343063EfEec9329bB",
+    functionName: "transfer",
+    args: ["0xb65D9CA12eC91694FE0C4E7390d26e2b42cc3180", 100],
+    to: "0xf38e414F34cF01999fB56d02584B44aa348aE9dc",
   });
 });
 
