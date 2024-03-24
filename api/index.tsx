@@ -154,7 +154,7 @@ app.frame("/", (c) => {
   }
 });
 
-app.frame("/ads2", (c) => {
+app.frame("/ads", (c) => {
   const { buttonValue, inputText, status, deriveState } = c;
   const state = deriveState((previousState) => {
     if (buttonValue === "dashboard") previousState.pageIndex = 1;
@@ -174,7 +174,7 @@ app.frame("/ads2", (c) => {
         ),
         intents: [
           <Button value="dashboard">Dashboard</Button>,
-          <Button action="/generate-captcha2">View Ads</Button>,
+          <Button action="/generate-captcha">View Ads</Button>,
         ],
       });
     case 1:
@@ -214,7 +214,7 @@ app.frame("/ads2", (c) => {
   }
 });
 
-app.frame("/generate-captcha2", async (c) => {
+app.frame("/generate-captcha", async (c) => {
   const { deriveState } = c ?? {};
   const { data, state, image } = await generateCaptchaChallenge();
   // The 2 numbers generated can be used to generate custom Frame image
@@ -228,12 +228,12 @@ app.frame("/generate-captcha2", async (c) => {
     image, // Use template Frame image
     intents: [
       <TextInput placeholder="Type Here!" />,
-      <Button action="/verify-captcha2">Verify</Button>,
+      <Button action="/verify-captcha">Verify</Button>,
     ],
   });
 });
 
-app.frame("/verify-captcha2", async (c) => {
+app.frame("/verify-captcha", async (c) => {
   const { inputText, deriveState } = c ?? {};
   const state = deriveState() ?? {};
   const { isValidated, image } = await validateCaptchaChallenge({
@@ -250,7 +250,7 @@ app.frame("/verify-captcha2", async (c) => {
     intents: [
       <Button
         value="validated"
-        action={isValidated ? "/ads" : "/generate-captcha2"}
+        action={isValidated ? "/ads" : "/generate-captcha"}
       >
         {isValidated ? "Continue" : "Try Again?"}
       </Button>,
