@@ -92,22 +92,14 @@ export const app = new Frog({
 });
 
 app.transaction("/approve", (c) => {
+  const { inputText } = c;
+
   return c.contract({
     abi,
     chainId: "eip155:84532",
     functionName: "transfer",
-    args: ["0xb65D9CA12eC91694FE0C4E7390d26e2b42cc3180", 100],
+    args: ["0xb65D9CA12eC91694FE0C4E7390d26e2b42cc3180", parseEther(inputText)],
     to: "0xf38e414F34cF01999fB56d02584B44aa348aE9dc",
-  });
-});
-
-app.transaction("/send-ether", (c) => {
-  const { inputText } = c;
-  // Send transaction response.
-  return c.send({
-    chainId: "eip155:84532",
-    to: "0xd2135CfB216b74109775236E36d4b433F1DF507B",
-    value: parseEther("0.000000000000000012"),
   });
 });
 
@@ -130,11 +122,8 @@ app.frame("/", (c) => {
         ),
         intents: [
           <TextInput placeholder="$DEGEN amount" />,
-          <Button.Transaction target="/approve" action="/campaign">
+          <Button.Transaction target="/approve" value="approve">
             Approve
-          </Button.Transaction>,
-          <Button.Transaction target="/send-ether" action="/campaign">
-            Send tx
           </Button.Transaction>,
         ],
       });
