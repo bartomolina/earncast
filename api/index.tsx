@@ -8,7 +8,12 @@ import {
   validateCaptchaChallenge,
 } from "@airstack/frog";
 import { abi } from "./abi.js";
-import { constants } from "ethers";
+import { PinataFDK } from "pinata-fdk"; // import fdk
+
+const fdk = new PinataFDK({
+  pinata_jwt: process.env.PINATA_JWT as string,
+  pinata_gateway: process.env.GATEWAY_URL as string,
+});
 
 // Uncomment to use Edge Runtime.
 // export const config = {
@@ -90,6 +95,11 @@ export const app = new Frog({
   // hub: neynar({ apiKey: 'NEYNAR_FROG_FM' })
 });
 
+app.use(
+  "/",
+  fdk.analyticsMiddleware({ frameId: "frame_id", customId: "custom_id" })
+);
+
 app.transaction("/approve", (c) => {
   const { inputText } = c;
 
@@ -155,11 +165,21 @@ app.frame("/", (c) => {
 });
 
 app.frame("/ads2", (c) => {
-  const { buttonValue, inputText, status, deriveState } = c;
+  const { buttonValue, inputText, status, deriveState, frameData } = c;
   const state = deriveState((previousState) => {
-    if (buttonValue === "dashboard") previousState.pageIndex = 1;
+    if (buttonValue === "dashboard") {
+      if (frameData) {
+        fdk.sendAnalytics("campaign2", frameData, "2");
+      }
+      previousState.pageIndex = 1;
+    }
     if (buttonValue === "validated") previousState.pageIndex = 2;
-    if (buttonValue === "next") previousState.pageIndex = 3;
+    if (buttonValue === "next") {
+      previousState.pageIndex = 3;
+      if (frameData) {
+        fdk.sendAnalytics("campaign2", frameData, "2");
+      }
+    }
   });
   console.log("state: ", state);
   console.log("status: ", status);
@@ -207,8 +227,8 @@ app.frame("/ads2", (c) => {
           "Must follow @cryptoplaza @earncast. Must recast this frame"
         ),
         intents: [
-          <Button value="next">Claim rewards</Button>,
-          <Button value="next">⏭️</Button>,
+          <Button value="next2">Claim rewards</Button>,
+          <Button value="next2">⏭️</Button>,
         ],
       });
   }
