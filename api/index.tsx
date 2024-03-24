@@ -250,7 +250,7 @@ app.frame("/verify-captcha", async (c) => {
     intents: [
       <Button
         value="validated"
-        action={isValidated ? "/ads" : "/generate-captcha"}
+        action={isValidated ? "/ads2" : "/generate-captcha"}
       >
         {isValidated ? "Continue" : "Try Again?"}
       </Button>,
