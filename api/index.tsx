@@ -18,7 +18,8 @@ import { constants } from "ethers";
 const campaignImage = (
   title: string,
   subtitle: string,
-  description: string
+  description: string,
+  tx: string
 ) => (
   <div
     style={{
@@ -104,9 +105,12 @@ app.transaction("/approve", (c) => {
 });
 
 app.frame("/", (c) => {
-  const { buttonValue, inputText, status, deriveState } = c;
+  const { buttonValue, inputText, status, deriveState, transactionId } = c;
   const state = deriveState((previousState) => {
-    if (buttonValue === "approve") previousState.pageIndex = 1;
+    if (transactionId) {
+      previousState.tx = transactionId;
+      previousState.pageIndex = 1;
+    }
     if (buttonValue === "submit") previousState.pageIndex = 2;
   });
   console.log("state: ", state);
@@ -122,9 +126,7 @@ app.frame("/", (c) => {
         ),
         intents: [
           <TextInput placeholder="$DEGEN amount" />,
-          <Button.Transaction target="/approve" value="approve">
-            Approve
-          </Button.Transaction>,
+          <Button.Transaction target="/approve">Approve</Button.Transaction>,
         ],
       });
     case 1:
