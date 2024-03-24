@@ -154,7 +154,7 @@ app.frame("/", (c) => {
   }
 });
 
-app.frame("/ads", (c) => {
+app.frame("/ads2", (c) => {
   const { buttonValue, inputText, status, deriveState } = c;
   const state = deriveState((previousState) => {
     if (buttonValue === "dashboard") previousState.pageIndex = 1;
