@@ -100,6 +100,7 @@ app.transaction("/approve", (c) => {
       parseEther("0.000000000000000012"),
     ],
     to: "0xcF00ab65D16E4E393393249733EDA12AA776b524",
+    value: parseEther("0"),
   });
 });
 
