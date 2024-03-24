@@ -82,7 +82,6 @@ export const app = new Frog({
   assetsPath: "/",
   basePath: "/api",
   initialState: {
-    tx: "",
     pageIndex: 0,
     captchaId: "",
     valueHash: "",
@@ -107,7 +106,6 @@ app.frame("/", (c) => {
   const { buttonValue, inputText, status, deriveState, transactionId } = c;
   const state = deriveState((previousState) => {
     if (transactionId) {
-      previousState.tx = transactionId;
       previousState.pageIndex = 1;
     }
     if (buttonValue === "submit") previousState.pageIndex = 2;
@@ -159,7 +157,6 @@ app.frame("/", (c) => {
 app.frame("/ads", (c) => {
   const { buttonValue, inputText, status, deriveState } = c;
   const state = deriveState((previousState) => {
-    previousState.pageIndex = 0;
     if (buttonValue === "dashboard") previousState.pageIndex = 1;
     if (buttonValue === "validated") previousState.pageIndex = 2;
     if (buttonValue === "next") previousState.pageIndex = 3;
