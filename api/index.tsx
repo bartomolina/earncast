@@ -29,7 +29,6 @@ const campaignImage = (
       flexWrap: "nowrap",
       height: "100%",
       justifyContent: "center",
-      textAlign: "center",
       width: "100%",
     }}
   >
@@ -160,8 +159,10 @@ app.frame("/", (c) => {
 app.frame("/ads", (c) => {
   const { buttonValue, inputText, status, deriveState } = c;
   const state = deriveState((previousState) => {
+    previousState.pageIndex = 0;
     if (buttonValue === "dashboard") previousState.pageIndex = 1;
     if (buttonValue === "validated") previousState.pageIndex = 2;
+    if (buttonValue === "next") previousState.pageIndex = 3;
   });
   console.log("state: ", state);
   console.log("status: ", status);
@@ -183,6 +184,7 @@ app.frame("/ads", (c) => {
       return c.res({
         image: campaignImage("Dashboard", "", ""),
         intents: [
+          <Button.Reset>Back</Button.Reset>,
           <Button.Redirect location="https://superfluid.finance">
             Superfluid
           </Button.Redirect>,
@@ -196,8 +198,20 @@ app.frame("/ads", (c) => {
           "Must follow @cryptoplaza @earncast. Must recast this frame"
         ),
         intents: [
-          <Button value="submit">Claim rewards</Button>,
-          <Button value="submit">⏭️</Button>,
+          <Button value="next">Claim rewards</Button>,
+          <Button value="next">⏭️</Button>,
+        ],
+      });
+    case 3:
+      return c.res({
+        image: campaignImage(
+          "Join us at Token2049!",
+          "",
+          "Must follow @cryptoplaza @earncast. Must recast this frame"
+        ),
+        intents: [
+          <Button value="next">Claim rewards</Button>,
+          <Button value="next">⏭️</Button>,
         ],
       });
   }
