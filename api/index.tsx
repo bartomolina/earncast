@@ -154,7 +154,7 @@ app.frame("/", (c) => {
   }
 });
 
-app.frame("/ads", (c) => {
+app.frame("/ads2", (c) => {
   const { buttonValue, inputText, status, deriveState } = c;
   const state = deriveState((previousState) => {
     if (buttonValue === "dashboard") previousState.pageIndex = 1;
@@ -209,6 +209,40 @@ app.frame("/ads", (c) => {
         intents: [
           <Button value="next">Claim rewards</Button>,
           <Button value="next">⏭️</Button>,
+        ],
+      });
+  }
+});
+
+app.frame("/ads", (c) => {
+  const { buttonValue, inputText, status, deriveState } = c;
+  const state = deriveState((previousState) => {
+    if (buttonValue === "dashboard") previousState.pageIndex = 1;
+  });
+  console.log("state: ", state);
+  console.log("status: ", status);
+
+  switch (state.pageIndex) {
+    case 0:
+      return c.res({
+        image: campaignImage(
+          "🤑 Get paid watching ads",
+          "...",
+          "start watching ads, claim your rewards"
+        ),
+        intents: [
+          <Button value="dashboard">Dashboard</Button>,
+          <Button action="/generate-captcha">View Ads</Button>,
+        ],
+      });
+    case 1:
+      return c.res({
+        image: campaignImage("Dashboard", "", ""),
+        intents: [
+          <Button.Reset>Back</Button.Reset>,
+          <Button.Redirect location="https://superfluid.finance">
+            Superfluid
+          </Button.Redirect>,
         ],
       });
   }
